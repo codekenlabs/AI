@@ -27,7 +27,7 @@ async function generate(message){
     chat.lastChild.remove(); // hapus "lagi mikir"
     addMsg(data.answer,"ai");
 
-    // Voice TTS
+    // Voice TTS otomatis
     const utter = new SpeechSynthesisUtterance(data.answer);
     utter.lang="id-ID";
     speechSynthesis.speak(utter);
