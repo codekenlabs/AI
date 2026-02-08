@@ -3,7 +3,7 @@ import os
 import openai
 
 app = Flask(__name__)
-openai.api_key = os.environ.get("OPENAI_API_KEY")  # jangan masukin langsung
+openai.api_key = os.environ.get("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")  # jangan masukin langsung
 
 @app.route("/chat", methods=["POST"])
 def chat():
