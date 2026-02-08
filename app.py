@@ -12,10 +12,9 @@ def chat():
     if not user_msg:
         return jsonify({"answer": "Teks kosong!"})
 
-    # Prompt khusus: AI pinter, bisa buat script Python
     prompt = f"""
     Kamu AI GPT mirip ChatGPT. Jawab santai, jelas, dan waras.
-    Jika user minta buat script / kode Python, buat langsung script yang valid
+    Jika user minta buat script / kode Python, tampilkan langsung script yang valid
     dan beri penjelasan singkat. 
     User request: {user_msg}
     """
@@ -29,13 +28,6 @@ def chat():
         )
 
         answer = response.choices[0].message.content
-
-        # Simpan file Python kalau ada kode
-        if "```python" in answer:
-            code = answer.split("```python")[1].split("```")[0]
-            with open("generated/generated_script.py","w",encoding="utf-8") as f:
-                f.write(code)
-
         return jsonify({"answer": answer})
 
     except Exception as e:
