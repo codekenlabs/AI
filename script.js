@@ -2,106 +2,112 @@ import { pipeline } from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.8.
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
-const btn = document.getElementById("sendBtn");
+const send = document.getElementById("send");
 const vaicon = document.getElementById("vaicon");
 
 let lastPrompt = "";
-let speaking = false;
 
 function setState(s="") {
   vaicon.className = "vaicon " + s;
 }
 
 function speak(text) {
-  if (!("speechSynthesis" in window)) return;
+  if (!speechSynthesis) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "id-ID";
-  u.rate = 1;
   setState("talking");
-  speaking = true;
-  u.onend = () => {
-    speaking = false;
-    setState("");
-  };
+  u.onend = () => setState("");
   speechSynthesis.speak(u);
 }
 
-function addAI(text) {
-  const div = document.createElement("div");
-  div.className = "msg ai";
-  div.innerHTML = `
-    <div class="text">${text}</div>
+function addUser(t) {
+  const d = document.createElement("div");
+  d.className = "msg user";
+  d.textContent = t;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addAI(t) {
+  const d = document.createElement("div");
+  d.className = "msg ai";
+  d.innerHTML = `
+    <div>${t}</div>
     <div class="actions">
-      <span onclick="copyText(this)">📋 Salin</span>
+      <span onclick="copy(this)">📋 Salin</span>
       <span onclick="retry()">🔄 Coba lagi</span>
       <span onclick="voice(this)">🔊 Voice</span>
-    </div>
-  `;
-  chat.appendChild(div);
+    </div>`;
+  chat.appendChild(d);
   chat.scrollTop = chat.scrollHeight;
 }
 
-function addUser(text) {
-  const div = document.createElement("div");
-  div.className = "msg user";
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-window.copyText = el => {
-  const text = el.parentElement.previousElementSibling.textContent;
-  navigator.clipboard.writeText(text);
-  el.textContent = "✅ Disalin";
-  setTimeout(()=> el.textContent="📋 Salin", 1200);
+window.copy = el => {
+  navigator.clipboard.writeText(el.parentElement.previousElementSibling.textContent);
+  el.textContent = "✅";
+  setTimeout(()=>el.textContent="📋 Salin",1000);
 };
 
 window.voice = el => {
-  const text = el.parentElement.previousElementSibling.textContent;
-  speak(text);
+  speak(el.parentElement.previousElementSibling.textContent);
 };
 
 window.retry = () => {
   if (lastPrompt) generate(lastPrompt);
 };
 
-addAI("Loading AI beneran... 🤖");
-btn.disabled = input.disabled = true;
+addAI("Loading AI waras... 🤖");
+send.disabled = input.disabled = true;
 setState("thinking");
 
-const ai = await pipeline("text-generation","Xenova/distilgpt2");
+const ai = await pipeline(
+  "text-generation",
+  "Xenova/SmolLM2-135M-Instruct"
+);
 
 chat.innerHTML = "";
-addAI("AI siap. Mirip ChatGPT 😈");
-btn.disabled = input.disabled = false;
+addAI("AI siap. Versi waras 😎");
+send.disabled = input.disabled = false;
 setState("");
 
-async function generate(prompt) {
-  lastPrompt = prompt;
-  btn.disabled = input.disabled = true;
+async function generate(text) {
+  lastPrompt = text;
+  send.disabled = input.disabled = true;
   setState("thinking");
 
+  const prompt = `
+Kamu adalah AI asisten.
+Jawab singkat, jelas, tidak mengulang kata.
+Gunakan bahasa Indonesia santai.
+
+User: ${text}
+AI:
+`;
+
   try {
-    const res = await ai(prompt, {
-      max_new_tokens: 100,
-      temperature: 0.9,
-      top_p: 0.95
+    const r = await ai(prompt, {
+      max_new_tokens: 120,
+      temperature: 0.6,
+      top_p: 0.9,
+      repetition_penalty: 1.35,
+      no_repeat_ngram_size: 3
     });
 
-    setState("");
-    const text = res[0].generated_text.replace(prompt,"").trim();
-    addAI(text);
-    speak(text);
+    let out = r[0].generated_text.replace(prompt,"").trim();
+    if (out.length > 500) out = out.slice(0,500)+"…";
+
+    addAI(out);
+    speak(out);
   } catch {
-    addAI("Error dikit bro 😅 refresh aja");
-    setState("");
+    addAI("Error dikit bro 😅");
   }
 
-  btn.disabled = input.disabled = false;
+  send.disabled = input.disabled = false;
+  setState("");
 }
 
-btn.onclick = () => {
+send.onclick = () => {
   if (!input.value.trim()) return;
   const t = input.value.trim();
   input.value = "";
@@ -110,5 +116,5 @@ btn.onclick = () => {
 };
 
 input.addEventListener("keydown", e => {
-  if (e.key === "Enter") btn.onclick();
+  if (e.key === "Enter") send.onclick();
 });
