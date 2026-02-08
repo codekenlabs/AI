@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>AI Chat 🤖</title>
+<title>AI Chat</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -11,20 +11,20 @@
 body {
   margin: 0;
   height: 100vh;
-  background: radial-gradient(circle at top, #1f2251, #0b0d1a);
+  background: linear-gradient(180deg, #0b0d1a, #1f2251);
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: #fff;
 }
 
 .app {
-  width: 95%;
-  max-width: 450px;
-  height: 94vh;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(22px);
-  border-radius: 22px;
+  width: 100%;
+  max-width: 480px;
+  height: 96vh;
+  background: rgba(255,255,255,.08);
+  backdrop-filter: blur(24px);
+  border-radius: 24px;
   display: flex;
   flex-direction: column;
 }
@@ -36,8 +36,8 @@ body {
 }
 
 .vaicon {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   margin: auto;
   border-radius: 50%;
   background: radial-gradient(circle at top, #7c7cff, #3a3a99);
@@ -46,33 +46,30 @@ body {
 }
 
 .vaicon.thinking { animation: pulse 1s infinite }
-.vaicon.talking { animation: talk .4s infinite alternate }
+.vaicon.talking { animation: talk .35s infinite alternate }
 
 @keyframes idle {
-  0%,100% { box-shadow: 0 0 18px #7c7cff }
   50% { box-shadow: 0 0 30px #a18bff }
 }
 @keyframes pulse {
   50% { transform: scale(1.15) }
 }
 @keyframes talk {
-  from { transform: scale(1) }
   to { transform: scale(1.12) }
 }
 
 .chat {
   flex: 1;
-  padding: 14px;
+  padding: 16px;
   overflow-y: auto;
 }
 
 .msg {
+  max-width: 85%;
   margin-bottom: 14px;
   padding: 12px 14px;
   border-radius: 16px;
-  max-width: 85%;
   animation: fade .25s ease;
-  position: relative;
 }
 
 @keyframes fade {
@@ -82,7 +79,7 @@ body {
 
 .user {
   background: linear-gradient(135deg, #7c7cff, #a18bff);
-  color: black;
+  color: #000;
   margin-left: auto;
 }
 
@@ -92,38 +89,36 @@ body {
 
 .actions {
   display: flex;
-  gap: 10px;
-  margin-top: 6px;
+  gap: 12px;
   font-size: 12px;
   opacity: .8;
+  margin-top: 6px;
 }
 
 .actions span {
   cursor: pointer;
-  user-select: none;
 }
 
 .input-box {
   display: flex;
   gap: 8px;
-  padding: 12px;
+  padding: 14px;
   border-top: 1px solid rgba(255,255,255,.15);
 }
 
 input {
   flex: 1;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: none;
   outline: none;
 }
 
 button {
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 0 18px;
   background: #7c7cff;
-  cursor: pointer;
 }
 </style>
 </head>
@@ -134,11 +129,11 @@ button {
     <div id="vaicon" class="vaicon"></div>
   </div>
 
-  <div class="chat" id="chat"></div>
+  <div id="chat" class="chat"></div>
 
   <div class="input-box">
     <input id="input" placeholder="Tanya apa aja..." />
-    <button id="sendBtn">➤</button>
+    <button id="send">➤</button>
   </div>
 </div>
 
